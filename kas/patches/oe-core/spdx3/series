@@ -1,0 +1,9 @@
+0001-backport-SPDX-3.0-fixes-and-tasks-from-upstream-vers.patch
+0002-spdx30_tasks-fix-FetchData-attribute-in-add_download.patch
+0003-classes-global-license-Move-functions-to-library-cod.patch
+0004-lib-license-Move-package-license-skip-to-library.patch
+0005-lib-oe-license-Add-missing-import.patch
+0006-classes-recipe-image-Add-image-file-manifest.patch
+0007-kernel.bbclass-Add-task-to-export-kernel-configur.patch
+0008-spdx30_tasks-Add-support-for-exporting-PACKAGECONFIG.patch
+0009-add-cve-status-metadata-in-spdx.patch

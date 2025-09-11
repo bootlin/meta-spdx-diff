@@ -1,0 +1,22 @@
+header:
+  version: 14
+
+repos:
+  meta-sbom-diff:
+    url: https://github.com/kamel-bouhara/meta-sbom-diff
+    branch: "scarthgap"
+    path: layers/meta-sbom-diff
+
+local_conf_header:
+  sbom: |
+    # Disable spdx2.2 as it's default spdx version in scarthgap
+    INHERIT:remove = "create-spdx"
+    INHERIT = "create-spdx-3.0"
+    # TODO: backport upstream vex support on scarthgap
+
+  sbom-diff: |
+    INHERIT += "sbom-diff"
+
+    SPDX_INCLUDE_KERNEL_CONFIG = "1"
+    SPDX_INCLUDE_PACKAGECONFIG = "1"
+    SPDX_INCLUDE_IGNORED_CVES = "1"

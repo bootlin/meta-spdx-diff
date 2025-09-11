@@ -1,0 +1,77 @@
+From 5f02c522403ced8b3cc355d07603597aacb98f07 Mon Sep 17 00:00:00 2001
+From: Kamel Bouhara <kamel.bouhara@bootlin.com>
+Date: Mon, 28 Jul 2025 14:59:25 +0200
+Subject: [PATCH v3 2/2] spdx30_tasks: Add support for exporting PACKAGECONFIG
+ to SPDX
+
+Introduce the SPDX_INCLUDE_PACKAGECONFIG variable, which when enabled causes
+PACKAGECONFIG features to be recorded in the SPDX document as build parameters.
+
+Each feature is recorded as a DictionaryEntry with key PACKAGECONFIG:<feature>
+and value enabled or disabled, depending on whether the feature is active in
+the current build.
+
+This makes the build-time configuration more transparent in SPDX output and
+improves reproducibility tracking.
+
+This makes the build-time configuration more transparent in SPDX output and
+improves reproducibility tracking. In particular, it allows consumers of the
+SBOM to identify enabled/disabled features that may affect security posture
+or feature set.
+
+Signed-off-by: Kamel Bouhara <kamel.bouhara@bootlin.com>
+---
+ meta/classes/create-spdx-3.0.bbclass |  5 +++++
+ meta/lib/oe/spdx30_tasks.py          | 20 ++++++++++++++++++++
+ 2 files changed, 25 insertions(+)
+
+diff --git a/meta/classes/create-spdx-3.0.bbclass b/meta/classes/create-spdx-3.0.bbclass
+index 15c31ba9a3..6125e8b547 100644
+--- a/meta/classes/create-spdx-3.0.bbclass
++++ b/meta/classes/create-spdx-3.0.bbclass
+@@ -56,6 +56,11 @@ and each CONFIG_* value will be included in the Build.build_parameter list as Di
+ items. Set to '0' to disable exporting kernel configuration to improve performance or reduce \
+ SPDX document size."
+ 
++SPDX_INCLUDE_PACKAGECONFIG ??= "0"
++SPDX_INCLUDE_PACKAGECONFIG[doc] = "If set to '1', each PACKAGECONFIG feature is recorded in the \
++build_Build object's build_parameter list as a DictionaryEntry with key \
++'PACKAGECONFIG:<feature>' and value 'enabled' or 'disabled'"
++
+ SPDX_IMPORTS ??= ""
+ SPDX_IMPORTS[doc] = "SPDX_IMPORTS is the base variable that describes how to \
+     reference external SPDX ids. Each import is defined as a key in this \
+diff --git a/meta/lib/oe/spdx30_tasks.py b/meta/lib/oe/spdx30_tasks.py
+index c352dab152..d708715981 100644
+--- a/meta/lib/oe/spdx30_tasks.py
++++ b/meta/lib/oe/spdx30_tasks.py
+@@ -815,6 +815,26 @@ def create_spdx(d):
+             sorted(list(build_inputs)) + sorted(list(debug_source_ids)),
+         )
+ 
++    if d.getVar("SPDX_INCLUDE_PACKAGECONFIG", True) != "0":
++        packageconfig = (d.getVar("PACKAGECONFIG") or "").split()
++        all_features = (d.getVarFlags("PACKAGECONFIG") or {}).keys()
++
++        if all_features:
++            enabled = set(packageconfig)
++            all_features_set = set(all_features)
++            disabled = all_features_set - enabled
++
++            for feature in sorted(all_features):
++                status = "enabled" if feature in enabled else "disabled"
++                build.build_parameter.append(
++                    oe.spdx30.DictionaryEntry(
++                        key=f"PACKAGECONFIG:{feature}",
++                        value=status
++                    )
++                )
++
++            bb.note(f"Added PACKAGECONFIG entries: {len(enabled)} enabled, {len(disabled)} disabled")
++
+     oe.sbom30.write_recipe_jsonld_doc(d, build_objset, "recipes", deploydir)
+ 
+ 
+-- 
+2.43.0
+
