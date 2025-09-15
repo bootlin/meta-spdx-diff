@@ -57,9 +57,36 @@ Note: Enabling ignored cve inclusion is currently not compatible with vex export
 
 4. Build your target image or any target, see examples provided in [meta-sbom-diff-test](https://github.com/kamel-bouhara/meta-sbom-diff-test).
 
-The resulting SPDX diff will be available in:
+The resulting SPDX diff will be output as below:
 
-   build/tmp-glibc/deploy/images/<MACHINE>/spdx_diff-<MACHINE>-<timestamp>.json
+```bash
+    [INFO] Opening SPDX file: /home/yocto/build/tmp-glibc/deploy/images/qemux86-64/reference-sbom.spdx.json
+    [INFO] Found 2357 elements in the SPDX3 document.
+    [INFO] Extracted 36 packages, 0 CONFIG_*, and 42 PACKAGECONFIG entries.
+    [INFO] Opening SPDX file: /home/yocto/build/tmp-glibc/deploy/images/qemux86-64/core-image-minimal-qemux86-64.rootfs.spdx.json
+    [INFO] Found 2408 elements in the SPDX3 document.
+    [INFO] Extracted 38 packages, 0 CONFIG_*, and 42 PACKAGECONFIG entries.
+    [INFO] Writing diff results to /home/yocto/build/tmp-glibc/work/qemux86_64-oe-linux/core-image-minimal/1.0/core-image-minimal-qemux86-64.rootfs-20250915-080632.spdx-diff.json
+
+    Packages - Added:
+     + example: 0.1
+     + i2c-tools: 4.3
+
+    Packages - Removed:
+
+    Kernel Config - Added:
+
+    Kernel Config - Removed:
+
+    PACKAGECONFIG - Added:
+
+    PACKAGECONFIG - Removed:
+    NOTE: Tasks Summary: Attempted 2397 tasks of which 2385 didn't need to be rerun and all succeeded.
+```
+
+An spdx.json will be available in
+
+   build/tmp-glibc/deploy/images/<MACHINE>/<IMAGE>-<MACHINE>-<timestamp>.json
 
 5. Inspect the diff output for added, removed, or changed packages, kernel configs, and package configurations.
 
