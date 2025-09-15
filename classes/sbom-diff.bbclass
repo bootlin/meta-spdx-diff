@@ -38,12 +38,20 @@ python do_sbom_diff() {
         "--full",
         "--output", work_output,
     ]
-
-    bb.note("Running SPDX diff script: %s" % " ".join(spdx_cmd))
     try:
-        subprocess.run(spdx_cmd, check=True)
-    except subprocess.CalledProcessError as e:
-        bb.fatal("SPDX diff tool failed with exit code %d" % e.returncode)
+        process = subprocess.Popen(
+            spdx_cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+        )
+        for line in process.stdout:
+            bb.plain(line.rstrip())
+        retcode = process.wait()
+        if retcode != 0:
+            bb.fatal("SPDX diff tool failed with exit code %d" % retcode)
+    except Exception as e:
+        bb.fatal("Failed to run SPDX diff tool: %s" % str(e))
 
     # Ensure deploy directory exists
     bb.utils.mkdirhier(deploydir)
