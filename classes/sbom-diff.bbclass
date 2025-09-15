@@ -45,29 +45,20 @@ python do_sbom_diff() {
     deploy_output = os.path.join(deploydir, diff_filename)
 
     # Run sbom-diff-tool
-    script = os.path.join(d.getVar('STAGING_BINDIR_NATIVE'), 'sbom-diff-tool')
-    spdx_cmd = [
-        script,
-        ref_spdx,
-        new_spdx,
-        "--ignore-proprietary",
-        "--full",
-        "--output", work_output,
-    ]
+    spdx_cmd = "%s %s %s --ignore-proprietary --full --output %s" % (
+        d.expand("${STAGING_BINDIR_NATIVE}/sbom-diff-tool"),
+        ref_spdx, new_spdx, work_output
+    )
+
     try:
-        process = subprocess.Popen(
-            spdx_cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=True,
-        )
-        for line in process.stdout:
-            bb.plain(line.rstrip())
-        retcode = process.wait()
-        if retcode != 0:
-            bb.fatal("SPDX diff tool failed with exit code %d" % retcode)
-    except Exception as e:
-        bb.fatal("Failed to run SPDX diff tool: %s" % str(e))
+        bb.note("Running: %s" % spdx_cmd)
+        stdout, stderr = bb.process.run(spdx_cmd, shell=True)
+        if stdout:
+            bb.plain(stdout)   # prints directly to console
+        if stderr:
+            bb.plain(stderr)
+    except bb.process.ExecutionError as e:
+        bb.fatal("SPDX diff tool failed with exit code %s" % e.exitcode)
 
     # Ensure deploy directory exists
     bb.utils.mkdirhier(deploydir)
