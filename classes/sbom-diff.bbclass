@@ -1,4 +1,5 @@
-SPDX_REF_FILE ?= "${DEPLOY_DIR_IMAGE}/reference-sbom.spdx.json"
+SPDX_REF_FILE ?= "${DL_DIR}/reference-sbom.spdx.json"
+
 python do_sbom_diff() {
     """
     Task: Generate a SPDX diff between a new SBOM and a reference SPDX file.
@@ -7,6 +8,7 @@ python do_sbom_diff() {
     import os
     import shutil
     import bb
+    import bb.fetch2 as fetch2
     from datetime import datetime
 
     workdir = d.getVar("WORKDIR")
@@ -16,6 +18,20 @@ python do_sbom_diff() {
     # Resolve SPDX files
     new_spdx = d.expand("${DEPLOY_DIR_IMAGE}/${IMAGE_LINK_NAME}.spdx.json")
     ref_spdx = d.getVar("SPDX_REF_FILE")
+    ref_uri = d.getVar("SRC_URI")
+
+    if ref_uri:
+        bb.note("Fetching SPDX via SRC_URI: %s" % ref_uri)
+
+        fetcher = fetch2.Fetch([ref_uri], d)
+        try:
+            fetcher.download()
+            ref_spdx = fetcher.localpath(ref_uri)
+            bb.note("Fetched reference SPDX: %s" % ref_spdx)
+            d.setVar("SPDX_REF_FILE", ref_spdx)
+
+        except Exception as e:
+            bb.fatal("Failed to fetch SPDX via SRC_URI: %s" % e)
 
     if not ref_spdx or not os.path.exists(ref_spdx):
         bb.fatal("Reference SPDX file not found: %s" % ref_spdx)
@@ -72,6 +88,8 @@ python do_sbom_diff() {
 }
 addtask do_sbom_diff after do_create_image_sbom_spdx before do_build
 do_sbom_diff[depends] += "sbom-diff-tool-native:do_populate_sysroot"
+do_sbom_diff[network] = "1"
+do_sbom_diff[nostamp] = "1"
 
 python do_clean:append() {
     import glob, os

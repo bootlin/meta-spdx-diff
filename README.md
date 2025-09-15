@@ -94,38 +94,37 @@ An spdx.json will be available in
 Reference SBOM
 ----------------------------------------------------------------------
 
-By default, the sbom-diff-tool recipe sets:
+By default, the sbom-diff class sets:
 
     SPDX_REF_FILE ?= "${DL_DIR}/reference-sbom.spdx.json"
 
 This points to the reference SPDX JSON file fetched via SRC_URI
 into the BitBake download directory.
 
-You can override this default by creating a bbappend and setting.
+You can override this default from your custom-image.bb recipe.
 
-Override SPDX_REF_FILE via sbom-diff-tool.bbappend
---------------------------------------------------
-
-1. Create a bbappend for sbom-diff-tool:
-
-   meta-mycustom/recipes-support/sbom-diff-tool/sbom-diff-tool.bbappend
-
-2. Add your custom SPDX file via SRC_URI:
-
+```bash
    SRC_URI:append = " file://my-reference.spdx.json"
+```
 
-   Place the file alongside the bbappend:
+Place the file alongside the images recipe directory:
 
-   meta-mycustom/recipes-support/sbom-diff-tool/my-reference.spdx.json
+```bash
+   meta-mycustom/recipes-core/images/files/my-reference.spdx.json
+```
 
-3. Override SPDX_REF_FILE to point to it:
+or using remote uri:
 
-   SPDX_REF_FILE ?= "${WORKDIR}/my-reference.spdx.json"
+```bash
+   SRC_URI:append = " https://../my-reference.spdx.json"
+   SRC_URI[sha256sum] = " https://../my-reference.spdx.json"
+```
 
-4. Build:
+2. Build:
 
-   $ bitbake sbom-diff-tool-native
-   $ bitbake <your-image>
+```bash
+   $ bitbake custom-image.bb
+```
 
 The do_sbom_diff task will now use your custom reference SPDX file.
 
