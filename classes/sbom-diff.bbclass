@@ -1,4 +1,4 @@
-SPDX_REF_FILE ?= "${DL_DIR}/reference-sbom.spdx.json"
+SPDX_REF_FILE ??= "file://reference-sbom.spdx.json"
 
 python do_sbom_diff() {
     """
@@ -17,24 +17,21 @@ python do_sbom_diff() {
 
     # Resolve SPDX files
     new_spdx = d.expand("${DEPLOY_DIR_IMAGE}/${IMAGE_LINK_NAME}.spdx.json")
-    ref_spdx = d.getVar("SPDX_REF_FILE")
-    ref_uri = d.getVar("SRC_URI")
+    ref_uri = d.getVar("SPDX_REF_FILE")
+    ref_spdx = ""
 
-    if ref_uri:
-        bb.note("Fetching SPDX via SRC_URI: %s" % ref_uri)
+    bb.note("Fetching SPDX: %s" % ref_uri)
 
-        fetcher = fetch2.Fetch([ref_uri], d)
-        try:
-            fetcher.download()
-            ref_spdx = fetcher.localpath(ref_uri)
-            bb.note("Fetched reference SPDX: %s" % ref_spdx)
-            d.setVar("SPDX_REF_FILE", ref_spdx)
+    fetcher = fetch2.Fetch([ref_uri], d)
+    try:
+        fetcher.download()
+        ref_spdx = fetcher.localpath(ref_uri)
+        bb.note("Fetched reference SPDX: %s" % ref_spdx)
+        d.setVar("SPDX_REF_FILE", ref_spdx)
 
-        except Exception as e:
-            bb.fatal("Failed to fetch SPDX via SRC_URI: %s" % e)
+    except Exception as e:
+        bb.fatal("Failed to fetch reference SPDX file: %s" % e)
 
-    if not ref_spdx or not os.path.exists(ref_spdx):
-        bb.fatal("Reference SPDX file not found: %s" % ref_spdx)
     if not os.path.exists(new_spdx):
         bb.fatal("New SPDX file not found: %s" % new_spdx)
 
