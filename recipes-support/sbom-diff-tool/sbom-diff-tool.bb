@@ -10,6 +10,8 @@ SRC_URI = " \
 
 SRCREV = "68e2db0bb556fcb0b35547cbc5128b6649533c26"
 
+RDEPENDS:${PN} = "python3-core"
+
 S = "${WORKDIR}/git"
 
 do_install() {
