@@ -42,14 +42,19 @@ python do_sbom_diff() {
     deploy_output = os.path.join(deploydir, diff_filename)
 
     # Run sbom-diff-tool
-    spdx_cmd = "%s %s %s --ignore-proprietary --full --output %s" % (
+    spdx_cmd = [
         d.expand("${STAGING_BINDIR_NATIVE}/sbom-diff-tool"),
-        ref_spdx, new_spdx, work_output
-    )
+        ref_spdx,
+        new_spdx,
+        "--ignore-proprietary",
+        "--full",
+        "--output",
+        work_output
+    ]
 
     try:
         bb.note("Running: %s" % spdx_cmd)
-        stdout, stderr = bb.process.run(spdx_cmd, shell=True)
+        stdout, stderr = bb.process.run(spdx_cmd)
         if stdout:
             bb.plain(stdout)   # prints directly to console
         if stderr:
