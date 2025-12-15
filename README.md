@@ -1,6 +1,6 @@
 # meta-sbom-diff
 
-This layer integrates the sbom-diff-tool utility into Yocto builds.
+This layer integrates the sbom-diff utility into Yocto builds.
 It allows you to generate SPDX Software Bill of Materials (SBOM) diffs
 between a newly built image and a reference SPDX file.
 
@@ -8,7 +8,7 @@ between a newly built image and a reference SPDX file.
 Features
 ----------------------------------------------------------------------
 
-- Provides sbom-diff-tool as a native build-time utility
+- Provides sbom-diff as a native build-time utility
 - Adds a do_sbom_diff BitBake task that:
   * Compares new vs. reference SPDX JSON files
   * Produces a timestamped diff report
@@ -32,7 +32,7 @@ To run an SBOM diff between the reference image and modified builds:
 1. Clone and include this layer in your bblayers.conf.
 
 ```bash
-    $ git clone https://github.com/bootlin/sbom-diff-tool.git layers/meta-sbom-diff
+    $ git clone https://github.com/bootlin/sbom-diff.git layers/meta-sbom-diff
 ```
 
 2. Enable sbom-diff class from your image recipe

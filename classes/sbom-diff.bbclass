@@ -41,9 +41,9 @@ python do_sbom_diff() {
     work_output = os.path.join(workdir, diff_filename)
     deploy_output = os.path.join(deploydir, diff_filename)
 
-    # Run sbom-diff-tool
+    # Run sbom-diff
     spdx_cmd = [
-        d.expand("${STAGING_BINDIR_NATIVE}/sbom-diff-tool"),
+        d.expand("${STAGING_BINDIR_NATIVE}/sbom-diff"),
         ref_spdx,
         new_spdx,
         "--ignore-proprietary",
@@ -80,7 +80,7 @@ python do_sbom_diff() {
     bb.note("Latest diff symlink: %s -> %s" % (symlink, os.path.basename(deploy_output)))
 }
 addtask do_sbom_diff after do_create_image_sbom_spdx before do_build
-do_sbom_diff[depends] += "sbom-diff-tool-native:do_populate_sysroot"
+do_sbom_diff[depends] += "sbom-diff-native:do_populate_sysroot"
 do_sbom_diff[network] = "1"
 do_sbom_diff[nostamp] = "1"
 

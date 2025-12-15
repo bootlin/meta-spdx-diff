@@ -78,7 +78,7 @@ The series file defines the order in which these patches are applied.
 Notes
 ----------------------------------------------------------------------
 
-- The reference SPDX file is provided by the sbom-diff-tool recipe.
+- The reference SPDX file is provided by the sbom-diff recipe.
 - You can override it in local.conf if needed:
     SPDX_REF_FILE = "/path/to/my/reference.spdx.json"
 - Results are timestamped but  multiple runs will overwrite older diffs.
