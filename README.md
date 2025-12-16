@@ -46,7 +46,6 @@ To run an SBOM diff between the reference image and modified builds:
 ```bash
 SPDX_INCLUDE_KERNEL_CONFIG = "1"
 SPDX_INCLUDE_PACKAGECONFIG = "1"
-SPDX_INCLUDE_IGNORED_CVES = "1"
 ```
 
 Note: Enabling ignored cve inclusion is currently not compatible with vex export, set:

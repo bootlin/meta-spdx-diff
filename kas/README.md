@@ -18,7 +18,6 @@ The kas configuration `sbom-diff.yml` sets up the following:
 - Enables additional SPDX features:
   * Kernel configuration export
   * PACKAGECONFIG export
-  * CVE ignore list export
 
 A set of patches in `kas/patches/oe-core/spdx3/` backports upstream
 SPDX 3.0 fixes and tasks into scarthgap.
@@ -58,7 +57,6 @@ sbom:
 sbom-diff:
   - Enable SPDX_INCLUDE_KERNEL_CONFIG
   - Enable SPDX_INCLUDE_PACKAGECONFIG
-  - Enable SPDX_INCLUDE_IGNORED_CVES
 
 ----------------------------------------------------------------------
 Patches
