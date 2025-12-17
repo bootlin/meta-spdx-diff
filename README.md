@@ -1,6 +1,6 @@
 # meta-sbom-diff
 
-This layer integrates the sbom-diff utility into Yocto builds.
+This layer integrates the [sbom-diff utility](https://github.com/bootlin/sbom-diff) into Yocto builds.
 It allows you to generate SPDX Software Bill of Materials (SBOM) diffs
 between a newly built image and a reference SPDX file.
 
@@ -22,7 +22,7 @@ Requirements
 - This layer included in bblayers.conf
 - On Scarthgap:
     - SPDX2.2 have to be disabled
-    - SPDX3 backport patches series applied (see `kas/patches/oe-core/spdx3/`)
+    - SPDX3 extended attributes patch series applied (see `kas/patches/oe-core/spdx3/`)
 
 ----------------------------------------------------------------------
 Enabling sbom-diff
@@ -32,7 +32,7 @@ To run an SBOM diff between the reference image and modified builds:
 1. Clone and include this layer in your bblayers.conf.
 
 ```bash
-    $ git clone https://github.com/bootlin/sbom-diff.git layers/meta-sbom-diff
+    $ git clone https://github.com/bootlin/meta-sbom-diff layers/meta-sbom-diff
 ```
 
 2. Enable sbom-diff class from your image recipe
@@ -46,12 +46,6 @@ To run an SBOM diff between the reference image and modified builds:
 ```bash
 SPDX_INCLUDE_KERNEL_CONFIG = "1"
 SPDX_INCLUDE_PACKAGECONFIG = "1"
-```
-
-Note: Enabling ignored cve inclusion is currently not compatible with vex export, set:
-
-```bash
-    SPDX_INCLUDE_VEX="none"
 ```
 
 4. Build your target image or any target, see examples provided in [meta-sbom-diff-test](https://github.com/bootlin/meta-sbom-diff-test).
@@ -83,9 +77,10 @@ The resulting SPDX diff will be output as below:
     NOTE: Tasks Summary: Attempted 2397 tasks of which 2385 didn't need to be rerun and all succeeded.
 ```
 
-An spdx.json will be available in
-
-   build/tmp-glibc/deploy/images/<MACHINE>/<IMAGE>-<MACHINE>-<timestamp>.json
+An spdx.json will be available in:
+```bash
+build/tmp-glibc/deploy/images/<MACHINE>/<IMAGE>-<MACHINE>-<timestamp>.json
+```
 
 5. Inspect the diff output for added, removed, or changed packages, kernel configs, and package configurations.
 
@@ -94,8 +89,9 @@ Reference SBOM
 ----------------------------------------------------------------------
 
 By default, the sbom-diff class sets:
-
-    SPDX_REF_FILE ?= "${DL_DIR}/reference-sbom.spdx.json"
+```bash
+SPDX_REF_FILE ??= "file://reference-sbom.spdx.json"
+```
 
 This points to the reference SPDX JSON file fetched via SRC_URI
 into the BitBake download directory.
@@ -125,7 +121,7 @@ or using remote uri:
    $ bitbake custom-image.bb
 ```
 
-The do_sbom_diff task will now use your custom reference SPDX file.
+The `do_sbom_diff` task will now use your custom reference SPDX file.
 
 ----------------------------------------------------------------------
 Support

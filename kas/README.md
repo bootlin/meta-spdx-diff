@@ -13,14 +13,13 @@ The kas configuration `sbom-diff.yml` sets up the following:
 
 - Adds the meta-sbom-diff layer
 - Disables the default SPDX 2.2 generation in scarthgap
-- Enables SPDX 3.0 generation (with patches backported)
+- Enables SPDX 3.0 generation
 - Inherits the sbom-diff class to generate SPDX diffs automatically
 - Enables additional SPDX features:
   * Kernel configuration export
   * PACKAGECONFIG export
 
-A set of patches in `kas/patches/oe-core/spdx3/` backports upstream
-SPDX 3.0 fixes and tasks into scarthgap.
+A set of patches in `kas/patches/oe-core/spdx3/` adds optional extended SPDX attributes.
 
 ----------------------------------------------------------------------
 Usage
@@ -42,35 +41,33 @@ Usage
    - SPDX 3.0 SBOM files will be generated
    - sbom-diff will run after image creation
    - A diff JSON will be deployed in:
-     tmp/deploy/images/<machine>/spdx_diff-<machine>-<timestamp>.json
+     `tmp/deploy/images/<machine>/spdx_diff-<machine>-<timestamp>.json`
 
 ----------------------------------------------------------------------
 Configuration Details
 ----------------------------------------------------------------------
 
-local_conf_header entries included by this kas file:
+`local_conf_header` entries included by this kas file:
 
 sbom:
-  - Remove create-spdx (SPDX 2.2) from INHERIT
-  - Add create-spdx-3.0 to INHERIT
+  - Remove create-spdx (SPDX 2.2) from `INHERIT`
+  - Add create-spdx-3.0 to `INHERIT`
 
 sbom-diff:
-  - Enable SPDX_INCLUDE_KERNEL_CONFIG
-  - Enable SPDX_INCLUDE_PACKAGECONFIG
+  - (optional) Set `SPDX_INCLUDE_KERNEL_CONFIG = 1`
+  - (optional) Set `SPDX_INCLUDE_PACKAGECONFIG = 1`
 
 ----------------------------------------------------------------------
 Patches
 ----------------------------------------------------------------------
 
-Directory: kas/patches/oe-core/spdx3/
+Directory: `kas/patches/oe-core/spdx3/`
 
-These patches backport SPDX 3.0 support and fixes from upstream master
-into scarthgap. They cover:
+These patches add support for SPDX 3.0 extended attributes:
+- 0001: add kernel configuration to the SPDX SBOM
+- 0002: add PACKAGECONFIG to the SPDX SBOM
 
-  0001 ... 0007   SPDX 3.0 classes, tasks, and license helpers
-  0008 ... 0009   Kernel configuration, PACKAGECONFIG export and CVE status metadata
-
-The series file defines the order in which these patches are applied.
+The `series` file defines the order in which these patches are applied.
 
 ----------------------------------------------------------------------
 Notes
@@ -78,5 +75,5 @@ Notes
 
 - The reference SPDX file is provided by the sbom-diff recipe.
 - You can override it in local.conf if needed:
-    SPDX_REF_FILE = "/path/to/my/reference.spdx.json"
-- Results are timestamped but  multiple runs will overwrite older diffs.
+    `SPDX_REF_FILE = "/path/to/my/reference.spdx.json"`
+- Results are timestamped but multiple runs will overwrite older diffs.
