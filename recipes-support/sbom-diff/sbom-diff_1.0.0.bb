@@ -8,7 +8,7 @@ SRC_URI = " \
     git://github.com/bootlin/sbom-diff.git;protocol=https;branch=main \
 "
 
-SRCREV = "68e2db0bb556fcb0b35547cbc5128b6649533c26"
+SRCREV = "e2d3fa13040875fccf3e0cc5747a299e54b3379b"
 
 RDEPENDS:${PN} = "python3-core"
 
