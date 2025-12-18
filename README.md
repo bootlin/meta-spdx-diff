@@ -100,7 +100,7 @@ into the BitBake download directory.
 You can override this default from your custom-image.bb recipe.
 
 ```bash
-   SRC_URI:append = " file://my-reference.spdx.json"
+SPDX_REF_FILE = " file://my-reference.spdx.json"
 ```
 
 Place the file alongside the images recipe directory:
@@ -112,8 +112,8 @@ Place the file alongside the images recipe directory:
 or using remote uri:
 
 ```bash
-   SRC_URI:append = " https://../my-reference.spdx.json"
-   SRC_URI[sha256sum] = " https://../my-reference.spdx.json"
+SPDX_REF_FILE = "https://../my-reference.spdx.json"
+SRC_URI[sha256sum] = "https://../my-reference.spdx.json"
 ```
 
 2. Build:
