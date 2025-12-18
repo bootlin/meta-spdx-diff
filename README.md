@@ -23,6 +23,7 @@ Requirements
 - On Scarthgap:
     - SPDX2.2 have to be disabled
     - SPDX3 extended attributes patch series applied (see `kas/patches/oe-core/spdx3/`)
+    - The local OpenEmbedded-Core git repository **must be checked out** at least to commit [`7493eeed6d53bc704f558a0ccf8a0b5195381873`](https://git.openembedded.org/openembedded-core/commit/?h=scarthgap&id=7493eeed6d53bc704f558a0ccf8a0b5195381873). Earlier revisions may not (fully) include the SPDX 3.0 support that has been backported to Scarthgap.
 
 ----------------------------------------------------------------------
 Enabling sbom-diff
