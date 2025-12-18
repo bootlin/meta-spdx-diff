@@ -28,13 +28,13 @@ Usage
 1. Clone kas if not already available:
 
 ```bash
-   $ pip install kas
+$ pip install kas
 ```
 
 2. Run a kas build with this configuration:
 
 ```bash
-   $ kas build kas/sbom-diff.yml
+$ kas build kas/sbom-diff.yml
 ```
 
 3. During the build:

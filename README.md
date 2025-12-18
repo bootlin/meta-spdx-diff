@@ -33,13 +33,13 @@ To run an SBOM diff between the reference image and modified builds:
 1. Clone and include this layer in your bblayers.conf.
 
 ```bash
-    $ git clone https://github.com/bootlin/meta-sbom-diff layers/meta-sbom-diff
+$ git clone https://github.com/bootlin/meta-sbom-diff layers/meta-sbom-diff
 ```
 
 2. Enable sbom-diff class from your image recipe
 
 ```bash
-    inherit sbom-diff
+inherit sbom-diff
 ```
 
 3. Enable one or all available SPDX3 features below:
@@ -54,28 +54,28 @@ SPDX_INCLUDE_PACKAGECONFIG = "1"
 The resulting SPDX diff will be output as below:
 
 ```bash
-    [INFO] Opening SPDX file: /home/yocto/build/tmp-glibc/deploy/images/qemux86-64/reference-sbom.spdx.json
-    [INFO] Found 2357 elements in the SPDX3 document.
-    [INFO] Extracted 36 packages, 0 CONFIG_*, and 42 PACKAGECONFIG entries.
-    [INFO] Opening SPDX file: /home/yocto/build/tmp-glibc/deploy/images/qemux86-64/core-image-minimal-qemux86-64.rootfs.spdx.json
-    [INFO] Found 2408 elements in the SPDX3 document.
-    [INFO] Extracted 38 packages, 0 CONFIG_*, and 42 PACKAGECONFIG entries.
-    [INFO] Writing diff results to /home/yocto/build/tmp-glibc/work/qemux86_64-oe-linux/core-image-minimal/1.0/core-image-minimal-qemux86-64.rootfs-20250915-080632.spdx-diff.json
+[INFO] Opening SPDX file: /home/yocto/build/tmp-glibc/deploy/images/qemux86-64/reference-sbom.spdx.json
+[INFO] Found 2357 elements in the SPDX3 document.
+[INFO] Extracted 36 packages, 0 CONFIG_*, and 42 PACKAGECONFIG entries.
+[INFO] Opening SPDX file: /home/yocto/build/tmp-glibc/deploy/images/qemux86-64/core-image-minimal-qemux86-64.rootfs.spdx.json
+[INFO] Found 2408 elements in the SPDX3 document.
+[INFO] Extracted 38 packages, 0 CONFIG_*, and 42 PACKAGECONFIG entries.
+[INFO] Writing diff results to /home/yocto/build/tmp-glibc/work/qemux86_64-oe-linux/core-image-minimal/1.0/core-image-minimal-qemux86-64.rootfs-20250915-080632.spdx-diff.json
 
-    Packages - Added:
-     + example: 0.1
-     + i2c-tools: 4.3
+Packages - Added:
+    + example: 0.1
+    + i2c-tools: 4.3
 
-    Packages - Removed:
+Packages - Removed:
 
-    Kernel Config - Added:
+Kernel Config - Added:
 
-    Kernel Config - Removed:
+Kernel Config - Removed:
 
-    PACKAGECONFIG - Added:
+PACKAGECONFIG - Added:
 
-    PACKAGECONFIG - Removed:
-    NOTE: Tasks Summary: Attempted 2397 tasks of which 2385 didn't need to be rerun and all succeeded.
+PACKAGECONFIG - Removed:
+NOTE: Tasks Summary: Attempted 2397 tasks of which 2385 didn't need to be rerun and all succeeded.
 ```
 
 An spdx.json will be available in:
@@ -100,13 +100,13 @@ into the BitBake download directory.
 You can override this default from your custom-image.bb recipe.
 
 ```bash
-SPDX_REF_FILE = " file://my-reference.spdx.json"
+SPDX_REF_FILE = "file://my-reference.spdx.json"
 ```
 
 Place the file alongside the images recipe directory:
 
 ```bash
-   meta-mycustom/recipes-core/images/files/my-reference.spdx.json
+meta-mycustom/recipes-core/images/files/my-reference.spdx.json
 ```
 
 or using remote uri:
@@ -119,7 +119,7 @@ SRC_URI[sha256sum] = "https://../my-reference.spdx.json"
 2. Build:
 
 ```bash
-   $ bitbake custom-image.bb
+$ bitbake custom-image.bb
 ```
 
 The `do_sbom_diff` task will now use your custom reference SPDX file.
