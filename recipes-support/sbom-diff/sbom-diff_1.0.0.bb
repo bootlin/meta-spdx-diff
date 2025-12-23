@@ -1,8 +1,8 @@
 SUMMARY = "SPDX JSON diff tool for packages, kernel config, and PACKAGECONFIG"
 DESCRIPTION = "Compare SPDX3 JSON files and extract differences for packages, kernel configs, and PACKAGECONFIG entries."
 HOMEPAGE = "https://github.com/bootlin/sbom-diff"
-LICENSE = "MIT"
-LIC_FILES_CHKSUM = "file://${S}/LICENSE;md5=3b7e96f81f3e5e1d71e1c1a29d3f9c2b"
+LICENSE = "GPL-2.0-only"
+LIC_FILES_CHKSUM = "file://${S}/LICENSE;md5=a0a1050a465f5d6ca944306c5642dc96"
 
 SRC_URI = " \
     git://github.com/bootlin/sbom-diff.git;protocol=https;branch=main \
