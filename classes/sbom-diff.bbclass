@@ -3,6 +3,9 @@ SPDX_REF_FILE ??= "file://reference-sbom.spdx.json"
 SBOM_DIFF_EXTRA_ARGS ?= ""
 SBOM_DIFF_EXTRA_ARGS[doc] = "Specify additional arguments passed to sbom-diff (for example, to enable filtering)."
 
+SBOM_DIFF_LOG_WARN ?= "0"
+SBOM_DIFF_LOG_WARN[doc] = "If set to '1', the sbom-diff log is emitted as a warning instead of a plain note."
+
 python do_sbom_diff() {
     """
     Task: Generate a SPDX diff between a new SBOM and a reference SPDX file.
@@ -61,7 +64,10 @@ python do_sbom_diff() {
         bb.note("Running: %s" % spdx_cmd)
         stdout, stderr = bb.process.run(spdx_cmd)
         if stdout:
-            bb.plain(stdout)   # prints directly to console
+            if bb.utils.to_boolean(d.getVar("SBOM_DIFF_LOG_WARN")):
+                bb.warn(stdout)
+            else:
+                bb.plain(stdout)
         if stderr:
             bb.plain(stderr)
     except bb.process.ExecutionError as e:
