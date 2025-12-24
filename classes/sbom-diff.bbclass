@@ -1,5 +1,8 @@
 SPDX_REF_FILE ??= "file://reference-sbom.spdx.json"
 
+SBOM_DIFF_EXTRA_ARGS ?= ""
+SBOM_DIFF_EXTRA_ARGS[doc] = "Specify additional arguments passed to sbom-diff (for example, to enable filtering)."
+
 python do_sbom_diff() {
     """
     Task: Generate a SPDX diff between a new SBOM and a reference SPDX file.
@@ -52,6 +55,8 @@ python do_sbom_diff() {
         work_output
     ]
 
+    spdx_cmd.extend(d.getVar("SBOM_DIFF_EXTRA_ARGS").split())
+
     try:
         bb.note("Running: %s" % spdx_cmd)
         stdout, stderr = bb.process.run(spdx_cmd)
@@ -60,7 +65,7 @@ python do_sbom_diff() {
         if stderr:
             bb.plain(stderr)
     except bb.process.ExecutionError as e:
-        bb.fatal("SPDX diff tool failed with exit code %s" % e.exitcode)
+        bb.fatal("SPDX diff tool failed with exit code %s\n%s \n%s" % (e.exitcode, e.stdout, e.stderr))
 
     # Ensure deploy directory exists
     bb.utils.mkdirhier(deploydir)
