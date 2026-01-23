@@ -1,132 +1,92 @@
 # meta-sbom-diff
 
-This layer integrates the [sbom-diff utility](https://github.com/bootlin/sbom-diff) into Yocto builds.
-It allows you to generate SPDX Software Bill of Materials (SBOM) diffs
-between a newly built image and a reference SPDX file.
+Yocto layer for comparing SPDX 3.0 SBOMs between builds.
 
-----------------------------------------------------------------------
-Features
-----------------------------------------------------------------------
+## Features
 
-- Provides sbom-diff as a native build-time utility
-- Adds a do_sbom_diff BitBake task that:
-  * Compares new vs. reference SPDX JSON files
-  * Produces a timestamped diff report
-  * Deploys results into the image deploy directory
+- Provides `sbom-diff` as a native build tool
+- Adds `do_sbom_diff` task to automatically compare SBOMs
+- Generates timestamped diff reports with symlink to latest
 
-----------------------------------------------------------------------
-Requirements
-----------------------------------------------------------------------
+## Requirements
 
-- Yocto / OpenEmbedded build environment
-- This layer included in bblayers.conf
-- On Scarthgap:
-    - SPDX2.2 have to be disabled
-    - SPDX3 extended attributes patch series applied (see `kas/patches/oe-core/spdx3/`)
-    - The local OpenEmbedded-Core git repository **must be checked out** at least to commit [`7493eeed6d53bc704f558a0ccf8a0b5195381873`](https://git.openembedded.org/openembedded-core/commit/?h=scarthgap&id=7493eeed6d53bc704f558a0ccf8a0b5195381873). Earlier revisions may not (fully) include the SPDX 3.0 support that has been backported to Scarthgap.
+- Yocto/OpenEmbedded with SPDX 3.0 support (Scarthgap 5.1+)
+- For Scarthgap: OE-Core commit [`a172a0e8d5`](https://git.openembedded.org/openembedded-core/commit/?h=scarthgap&id=a172a0e8d5) or later
 
-----------------------------------------------------------------------
-Enabling sbom-diff
-----------------------------------------------------------------------
-To run an SBOM diff between the reference image and modified builds:
+## Quick Start
 
-1. Clone and include this layer in your bblayers.conf.
-
+1. Add layer to `bblayers.conf`:
 ```bash
-$ git clone https://github.com/bootlin/meta-sbom-diff layers/meta-sbom-diff
+git clone https://github.com/bootlin/meta-sbom-diff layers/meta-sbom-diff
 ```
 
-2. Enable sbom-diff class from your image recipe
-
+2. In your image recipe:
 ```bash
 inherit sbom-diff
 ```
 
-3. Enable one or all available SPDX3 features below:
-
+3. Enable SPDX 3.0 metadata (recommended):
 ```bash
 SPDX_INCLUDE_KERNEL_CONFIG = "1"
 SPDX_INCLUDE_PACKAGECONFIG = "1"
 ```
 
-4. Build your target image or any target, see examples provided in [meta-sbom-diff-test](https://github.com/bootlin/meta-sbom-diff-test).
-
-The resulting SPDX diff will be output as below:
-
+4. Build:
 ```bash
-[INFO] Opening SPDX file: /home/yocto/build/tmp-glibc/deploy/images/qemux86-64/reference-sbom.spdx.json
-[INFO] Found 2357 elements in the SPDX3 document.
-[INFO] Extracted 36 packages, 0 CONFIG_*, and 42 PACKAGECONFIG entries.
-[INFO] Opening SPDX file: /home/yocto/build/tmp-glibc/deploy/images/qemux86-64/core-image-minimal-qemux86-64.rootfs.spdx.json
-[INFO] Found 2408 elements in the SPDX3 document.
-[INFO] Extracted 38 packages, 0 CONFIG_*, and 42 PACKAGECONFIG entries.
-[INFO] Writing diff results to /home/yocto/build/tmp-glibc/work/qemux86_64-oe-linux/core-image-minimal/1.0/core-image-minimal-qemux86-64.rootfs-20250915-080632.spdx-diff.json
+bitbake core-image-minimal
+```
 
+## Output
+
+Results are deployed to `tmp/deploy/images/${MACHINE}/`:
+```
+core-image-minimal-qemux86-64-20250123-120000.spdx-diff.json  # Timestamped
+core-image-minimal-qemux86-64.spdx-diff.json                   # Symlink to latest
+```
+
+Example output:
+```
 Packages - Added:
     + example: 0.1
     + i2c-tools: 4.3
 
-Packages - Removed:
+Packages - Changed:
+    ~ openssl: 3.0.13 -> 3.0.14
 
 Kernel Config - Added:
-
-Kernel Config - Removed:
-
-PACKAGECONFIG - Added:
-
-PACKAGECONFIG - Removed:
-NOTE: Tasks Summary: Attempted 2397 tasks of which 2385 didn't need to be rerun and all succeeded.
+    + CONFIG_SECURITY_SELINUX: y
 ```
 
-An spdx.json will be available in:
+## Custom Reference SBOM
+
+Default reference: `file://reference-sbom.spdx.json`
+
+Override in your recipe:
 ```bash
-build/tmp-glibc/deploy/images/<MACHINE>/<IMAGE>-<MACHINE>-<timestamp>.json
+# Local file
+SPDX_REF_FILE = "file://my-baseline.spdx.json"
+
+# Or remote
+SPDX_REF_FILE = "https://example.com/baseline.spdx.json"
+SRC_URI[sha256sum] = "..."
 ```
 
-5. Inspect the diff output for added, removed, or changed packages, kernel configs, and package configurations.
-
-----------------------------------------------------------------------
-Reference SBOM
-----------------------------------------------------------------------
-
-By default, the sbom-diff class sets:
-```bash
-SPDX_REF_FILE ??= "file://reference-sbom.spdx.json"
-```
-
-This points to the reference SPDX JSON file fetched via SRC_URI
-into the BitBake download directory.
-
-You can override this default from your custom-image.bb recipe.
+## Configuration
 
 ```bash
-SPDX_REF_FILE = "file://my-reference.spdx.json"
+# Extra sbom-diff arguments
+SBOM_DIFF_EXTRA_ARGS = "--show-packages --summary"
+
+# Verbose output
+SBOM_DIFF_EXTRA_ARGS = "-v"
 ```
 
-Place the file alongside the images recipe directory:
+## Examples
 
-```bash
-meta-mycustom/recipes-core/images/files/my-reference.spdx.json
-```
+See [meta-sbom-diff-test](https://github.com/bootlin/meta-sbom-diff-test) for working examples with KAS.
 
-or using remote uri:
+## Links
 
-```bash
-SPDX_REF_FILE = "https://../my-reference.spdx.json"
-SRC_URI[sha256sum] = "https://../my-reference.spdx.json"
-```
-
-2. Build:
-
-```bash
-$ bitbake custom-image.bb
-```
-
-The `do_sbom_diff` task will now use your custom reference SPDX file.
-
-----------------------------------------------------------------------
-Support
-----------------------------------------------------------------------
-For issues or contributions, please open an issue or pull request on GitHub:
-
-https://github.com/bootlin/meta-sbom-diff
+- Tool: https://github.com/bootlin/sbom-diff
+- PyPI: https://pypi.org/project/sbom-diff/
+- Issues: https://github.com/bootlin/meta-sbom-diff/issues
