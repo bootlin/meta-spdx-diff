@@ -80,6 +80,6 @@ python do_sbom_diff() {
 
 addtask do_sbom_diff after do_create_image_sbom_spdx before do_build
 
-do_sbom_diff[depends] += "sbom-diff-native:do_populate_sysroot"
+do_sbom_diff[depends] += "python3-sbom-diff-native:do_populate_sysroot"
 do_sbom_diff[network] = "1"
 do_sbom_diff[dirs] = "${WORKDIR}"

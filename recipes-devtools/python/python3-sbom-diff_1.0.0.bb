@@ -3,13 +3,16 @@ DESCRIPTION = "Compare SPDX 3.0 JSON documents to track changes in packages, \
 kernel configuration, and PACKAGECONFIG settings between builds."
 HOMEPAGE = "https://github.com/bootlin/sbom-diff"
 LICENSE = "GPL-2.0-only"
-LIC_FILES_CHKSUM = "file://LICENSE;md5=a0a1050a465f5d6ca944306c5642dc96"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=4a8425a3470f4570828f7d270eca516e"
 
-PYPI_PACKAGE = "sbom-diff"
+SRC_URI = " \
+    git://git@github.com/bootlin/sbom-diff.git;protocol=ssh;branch=main \
+"
 
-inherit pypi python_setuptools_build_meta
+S = "${WORKDIR}/git"
+SRCREV = "75c6923e4327d7945ca64da3ec4907d9ae8e56ae"
 
-SRC_URI[sha256sum] = "6ff16ec4793a5fed1b5bd5dea7ce149f1e7e4542b209fc677b680fa89af2851d"
+inherit python_hatchling
 
 RDEPENDS:${PN} = "python3-core"
 
