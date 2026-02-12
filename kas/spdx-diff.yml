@@ -2,10 +2,10 @@ header:
   version: 14
 
 repos:
-  meta-sbom-diff:
-    url: https://github.com/bootlin/meta-sbom-diff
+  meta-spdx-diff:
+    url: https://github.com/bootlin/meta-spdx-diff
     branch: "scarthgap"
-    path: layers/meta-sbom-diff
+    path: layers/meta-spdx-diff
 
 local_conf_header:
   sbom: |
@@ -13,8 +13,8 @@ local_conf_header:
     INHERIT:remove = "create-spdx"
     INHERIT += "create-spdx-3.0"
 
-  sbom-diff: |
-    INHERIT += "sbom-diff"
+  spdx-diff: |
+    INHERIT += "spdx-diff"
 
     SPDX_INCLUDE_KERNEL_CONFIG = "1"
     SPDX_INCLUDE_PACKAGECONFIG = "1"

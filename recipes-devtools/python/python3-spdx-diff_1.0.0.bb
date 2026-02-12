@@ -1,12 +1,12 @@
 SUMMARY = "SPDX document comparison tool"
 DESCRIPTION = "Compare SPDX 3.0 JSON documents to track changes in packages, \
 kernel configuration, and PACKAGECONFIG settings between builds."
-HOMEPAGE = "https://github.com/bootlin/sbom-diff"
+HOMEPAGE = "https://github.com/bootlin/spdx-diff"
 LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=4a8425a3470f4570828f7d270eca516e"
 
 SRC_URI = " \
-    git://git@github.com/bootlin/sbom-diff.git;protocol=ssh;branch=main \
+    git://git@github.com/bootlin/spdx-diff.git;protocol=ssh;branch=main \
 "
 
 S = "${WORKDIR}/git"

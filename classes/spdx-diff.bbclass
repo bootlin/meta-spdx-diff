@@ -2,10 +2,10 @@
 
 SPDX_REF_FILE ??= "file://reference-sbom.spdx.json"
 
-SBOM_DIFF_EXTRA_ARGS ?= ""
-SBOM_DIFF_EXTRA_ARGS[doc] = "Additional arguments passed to sbom-diff (e.g., -v, --show-packages, --summary)"
+SPDX_DIFF_EXTRA_ARGS ?= ""
+SPDX_DIFF_EXTRA_ARGS[doc] = "Additional arguments passed to spdx-diff (e.g., -v, --show-packages, --summary)"
 
-python do_sbom_diff() {
+python do_spdx_diff() {
     """
     Task: Generate a SPDX diff between a new SBOM and a reference SPDX file.
     """
@@ -46,7 +46,7 @@ python do_sbom_diff() {
 
     # Build command
     cmd = [
-        d.expand("${STAGING_BINDIR_NATIVE}/sbom-diff"),
+        d.expand("${STAGING_BINDIR_NATIVE}/spdx-diff"),
         ref_spdx,
         new_spdx,
         "--ignore-proprietary",
@@ -54,11 +54,11 @@ python do_sbom_diff() {
         "--output", work_output
     ]
 
-    extra_args = d.getVar("SBOM_DIFF_EXTRA_ARGS")
+    extra_args = d.getVar("SPDX_DIFF_EXTRA_ARGS")
     if extra_args:
         cmd.extend(extra_args.split())
 
-    # Run sbom-diff
+    # Run spdx-diff
     try:
         bb.note("Running: %s" % " ".join(cmd))
         stdout, stderr = bb.process.run(cmd)
@@ -67,7 +67,7 @@ python do_sbom_diff() {
         if stderr:
             bb.plain(stderr)
     except bb.process.ExecutionError as e:
-        bb.fatal("sbom-diff failed: %s\n%s" % (e.stdout, e.stderr))
+        bb.fatal("spdx-diff failed: %s\n%s" % (e.stdout, e.stderr))
 
     # Deploy results
     bb.utils.mkdirhier(deploydir)
@@ -78,8 +78,8 @@ python do_sbom_diff() {
     update_symlinks(deploy_output, symlink_file)
 }
 
-addtask do_sbom_diff after do_create_image_sbom_spdx before do_build
+addtask do_spdx_diff after do_create_image_sbom_spdx before do_build
 
-do_sbom_diff[depends] += "python3-sbom-diff-native:do_populate_sysroot"
-do_sbom_diff[network] = "1"
-do_sbom_diff[dirs] = "${WORKDIR}"
+do_spdx_diff[depends] += "python3-spdx-diff-native:do_populate_sysroot"
+do_spdx_diff[network] = "1"
+do_spdx_diff[dirs] = "${WORKDIR}"

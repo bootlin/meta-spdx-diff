@@ -1,11 +1,11 @@
-# meta-sbom-diff
+# meta-spdx-diff
 
 Yocto layer for comparing SPDX 3.0 SBOMs between builds.
 
 ## Features
 
-- Provides `sbom-diff` as a native build tool
-- Adds `do_sbom_diff` task to automatically compare SBOMs
+- Provides `spdx-diff` as a native build tool
+- Adds `do_spdx_diff` task to automatically compare SBOMs
 - Generates timestamped diff reports with symlink to latest
 
 ## Requirements
@@ -17,12 +17,12 @@ Yocto layer for comparing SPDX 3.0 SBOMs between builds.
 
 1. Add layer to `bblayers.conf`:
 ```bash
-git clone https://github.com/bootlin/meta-sbom-diff layers/meta-sbom-diff
+git clone https://github.com/bootlin/meta-spdx-diff layers/meta-spdx-diff
 ```
 
 2. In your image recipe:
 ```bash
-inherit sbom-diff
+inherit spdx-diff
 ```
 
 3. Enable SPDX 3.0 metadata (recommended):
@@ -74,19 +74,19 @@ SRC_URI[sha256sum] = "..."
 ## Configuration
 
 ```bash
-# Extra sbom-diff arguments
-SBOM_DIFF_EXTRA_ARGS = "--show-packages --summary"
+# Extra spdx-diff arguments
+SPDX_DIFF_EXTRA_ARGS = "--show-packages --summary"
 
 # Verbose output
-SBOM_DIFF_EXTRA_ARGS = "-v"
+SPDX_DIFF_EXTRA_ARGS = "-v"
 ```
 
 ## Examples
 
-See [meta-sbom-diff-test](https://github.com/bootlin/meta-sbom-diff-test) for working examples with KAS.
+See [meta-spdx-diff-test](https://github.com/bootlin/meta-spdx-diff-test) for working examples with KAS.
 
 ## Links
 
-- Tool: https://github.com/bootlin/sbom-diff
-- PyPI: https://pypi.org/project/sbom-diff/
-- Issues: https://github.com/bootlin/meta-sbom-diff/issues
+- Tool: https://github.com/bootlin/spdx-diff
+- PyPI: https://pypi.org/project/spdx-diff/
+- Issues: https://github.com/bootlin/meta-spdx-diff/issues
