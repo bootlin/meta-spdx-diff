@@ -5,14 +5,11 @@ HOMEPAGE = "https://github.com/bootlin/spdx-diff"
 LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=4a8425a3470f4570828f7d270eca516e"
 
-SRC_URI = " \
-    git://git@github.com/bootlin/spdx-diff.git;protocol=ssh;branch=main \
-"
+PYPI_PACKAGE = "spdx_diff"
 
-S = "${WORKDIR}/git"
-SRCREV = "75c6923e4327d7945ca64da3ec4907d9ae8e56ae"
+inherit pypi python_hatchling
 
-inherit python_hatchling
+SRC_URI[sha256sum] = "f9e53f50d16f3f2c3366ad3bc499dd95a6a805da845be3b8214c0234267c51f2"
 
 RDEPENDS:${PN} = "python3-core"
 
