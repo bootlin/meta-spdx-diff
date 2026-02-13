@@ -13,7 +13,6 @@ python do_spdx_diff() {
     """
     import os
     import bb.fetch2 as fetch2
-    from datetime import datetime
     from oe.cve_check import update_symlinks
 
     deploy_dir_img = d.getVar("DEPLOY_DIR_IMAGE")
@@ -38,8 +37,7 @@ python do_spdx_diff() {
         bb.fatal("Failed to fetch reference SPDX: %s" % e)
 
     # Generate output filenames
-    timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-    diff_filename = f"{image_name}-{timestamp}.spdx-diff.json"
+    diff_filename = f"{image_name}.spdx-diff.json"
     deploy_output = os.path.join(deploydir, diff_filename)
     symlink_file = os.path.join(deploydir, f"{image_link_name}.spdx-diff.json")
 
