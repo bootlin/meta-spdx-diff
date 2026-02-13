@@ -5,24 +5,24 @@ SPDX_REF_FILE ??= "file://reference-sbom.spdx.json"
 SPDX_DIFF_EXTRA_ARGS ?= ""
 SPDX_DIFF_EXTRA_ARGS[doc] = "Additional arguments passed to spdx-diff (e.g., -v, --show-packages, --summary)"
 
+SPDX_DIFF_DEPLOYDIR = "${WORKDIR}/spdx-diff/image-deploy"
+
 python do_spdx_diff() {
     """
     Task: Generate a SPDX diff between a new SBOM and a reference SPDX file.
     """
     import os
-    import shutil
-    import bb
     import bb.fetch2 as fetch2
     from datetime import datetime
     from oe.cve_check import update_symlinks
 
-    deploydir = d.getVar("DEPLOY_DIR_IMAGE")
+    deploy_dir_img = d.getVar("DEPLOY_DIR_IMAGE")
+    deploydir = d.getVar("SPDX_DIFF_DEPLOYDIR")
     image_link_name = d.getVar("IMAGE_LINK_NAME")
     image_name = d.getVar("IMAGE_NAME")
-    workdir = d.getVar("WORKDIR")
 
     # New SPDX from image build
-    new_spdx = os.path.join(deploydir, f"{image_link_name}.spdx.json")
+    new_spdx = os.path.join(deploy_dir_img, f"{image_link_name}.spdx.json")
     if not os.path.exists(new_spdx):
         bb.fatal("New SPDX file not found: %s" % new_spdx)
 
@@ -40,7 +40,6 @@ python do_spdx_diff() {
     # Generate output filenames
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     diff_filename = f"{image_name}-{timestamp}.spdx-diff.json"
-    work_output = os.path.join(workdir, diff_filename)
     deploy_output = os.path.join(deploydir, diff_filename)
     symlink_file = os.path.join(deploydir, f"{image_link_name}.spdx-diff.json")
 
@@ -51,7 +50,7 @@ python do_spdx_diff() {
         new_spdx,
         "--ignore-proprietary",
         "--full",
-        "--output", work_output
+        "--output", deploy_output
     ]
 
     extra_args = d.getVar("SPDX_DIFF_EXTRA_ARGS")
@@ -69,17 +68,17 @@ python do_spdx_diff() {
     except bb.process.ExecutionError as e:
         bb.fatal("spdx-diff failed: %s\n%s" % (e.stdout, e.stderr))
 
-    # Deploy results
-    bb.utils.mkdirhier(deploydir)
-    shutil.copy2(work_output, deploy_output)
-
-    # Update symlink to latest
+    # Create symlink
     bb.note("SPDX diff: %s" % deploy_output)
     update_symlinks(deploy_output, symlink_file)
 }
 
 addtask do_spdx_diff after do_create_image_sbom_spdx before do_build
 
+SSTATETASKS += "do_spdx_diff"
+SSTATE_SKIP_CREATION:task-spdx-diff = "1"
+do_spdx_diff[cleandirs] = "${SPDX_DIFF_DEPLOYDIR}"
+do_spdx_diff[sstate-inputdirs] = "${SPDX_DIFF_DEPLOYDIR}"
+do_spdx_diff[sstate-outputdirs] = "${DEPLOY_DIR_IMAGE}"
 do_spdx_diff[depends] += "python3-spdx-diff-native:do_populate_sysroot"
 do_spdx_diff[network] = "1"
-do_spdx_diff[dirs] = "${WORKDIR}"
