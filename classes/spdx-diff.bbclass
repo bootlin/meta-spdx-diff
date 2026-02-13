@@ -64,7 +64,7 @@ python do_spdx_diff() {
         if stderr:
             bb.plain(stderr)
     except bb.process.ExecutionError as e:
-        bb.fatal("spdx-diff failed: %s\n%s" % (e.stdout, e.stderr))
+        bb.fatal("%s" % e)
 
     # Create symlink
     bb.note("SPDX diff: %s" % deploy_output)
