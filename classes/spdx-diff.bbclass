@@ -1,18 +1,26 @@
 # SPDX-License-Identifier: MIT
 
-SPDX_REF_FILE ??= "file://reference-sbom.spdx.json"
+# In the image recipe, the following lines could/should be added:
+# FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
+# SRC_URI += "file://reference-sbom.spdx.json;name=spdxref"
+# SRC_URI[spdxref.sha256sum] = "..."
+
+SPDX_DIFF_REF_FILE ??= "${WORKDIR}/reference-sbom.spdx.json"
+SPDX_DIFF_REF_FILE[doc] = "Path to the reference SBOM that was fetched"
 
 SPDX_DIFF_EXTRA_ARGS ?= ""
 SPDX_DIFF_EXTRA_ARGS[doc] = "Additional arguments passed to spdx-diff (e.g., -v, --show-packages, --summary)"
 
 SPDX_DIFF_DEPLOYDIR = "${WORKDIR}/spdx-diff/image-deploy"
 
+unset do_fetch[noexec]
+unset do_unpack[noexec]
+
 python do_spdx_diff() {
     """
     Task: Generate a SPDX diff between a new SBOM and a reference SPDX file.
     """
     import os
-    import bb.fetch2 as fetch2
     from oe.cve_check import update_symlinks
 
     deploy_dir_img = d.getVar("DEPLOY_DIR_IMAGE")
@@ -25,16 +33,8 @@ python do_spdx_diff() {
     if not os.path.exists(new_spdx):
         bb.fatal("New SPDX file not found: %s" % new_spdx)
 
-    # Fetch reference SPDX
-    ref_uri = d.getVar("SPDX_REF_FILE")
-    bb.note("Fetching reference SPDX: %s" % ref_uri)
-
-    fetcher = fetch2.Fetch([ref_uri], d)
-    try:
-        fetcher.download()
-        ref_spdx = fetcher.localpath(ref_uri)
-    except Exception as e:
-        bb.fatal("Failed to fetch reference SPDX: %s" % e)
+    # Get reference SPDX
+    ref_spdx = d.getVar("SPDX_DIFF_REF_FILE")
 
     # Generate output filenames
     diff_filename = f"{image_name}.spdx-diff.json"
@@ -71,7 +71,7 @@ python do_spdx_diff() {
     update_symlinks(deploy_output, symlink_file)
 }
 
-addtask do_spdx_diff after do_create_image_sbom_spdx before do_build
+addtask do_spdx_diff after do_unpack do_create_image_sbom_spdx before do_build
 
 SSTATETASKS += "do_spdx_diff"
 SSTATE_SKIP_CREATION:task-spdx-diff = "1"
@@ -79,4 +79,3 @@ do_spdx_diff[cleandirs] = "${SPDX_DIFF_DEPLOYDIR}"
 do_spdx_diff[sstate-inputdirs] = "${SPDX_DIFF_DEPLOYDIR}"
 do_spdx_diff[sstate-outputdirs] = "${DEPLOY_DIR_IMAGE}"
 do_spdx_diff[depends] += "python3-spdx-diff-native:do_populate_sysroot"
-do_spdx_diff[network] = "1"
